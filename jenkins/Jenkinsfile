@@ -9,26 +9,11 @@ node {
     stage('Checkout') {
         deleteDir()
         checkout scm
-        
-        // Debug workspace contents
-        sh '''
-            echo "===== Workspace Structure ====="
-            pwd
-            echo "\nFull directory structure:"
-            find . -type f
-            echo "\nCurrent directory contents:"
-            ls -la
-        '''
     }
     
     stage('Build') {
         docker.image('python:2-alpine').inside {
             sh '''
-                echo "===== Build Stage Debug ====="
-                pwd
-                ls -la
-                
-                # Compile Python files
                 python -m py_compile sources/add2vals.py sources/calc.py
             '''
         }
@@ -49,21 +34,25 @@ node {
     }
     
     stage('Deliver') {
-        docker.image('python:2').inside {
+        // Use python:2 image with root user
+        docker.image('python:2').inside('--user root:root') {
             sh '''
-                # Install required packages
-                wget https://bootstrap.pypa.io/pip/2.7/get-pip.py
-                python get-pip.py --user
-                python -m pip install --user pyinstaller
-                
-                # Add local bin to PATH
-                export PATH=$PATH:~/.local/bin
+                # Update package lists and install wget
+                apt-get update
+                apt-get install -y wget
+
+                # Install pip and pyinstaller directly
+                python -m pip install --upgrade pip
+                python -m pip install pyinstaller
                 
                 # Create dist directory
                 mkdir -p dist
                 
                 # Run pyinstaller
                 pyinstaller --onefile sources/add2vals.py
+                
+                # Ensure correct permissions on output
+                chmod -R 777 dist/
             '''
             
             archiveArtifacts artifacts: 'dist/add2vals', allowEmptyArchive: false
