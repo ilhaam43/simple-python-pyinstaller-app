@@ -62,19 +62,26 @@ node {
         }
     }
     
-    stage('Deliver') {
-        def customOptions = '--entrypoint=""' 
-            docker.image('cdrx/pyinstaller-linux:python2').inside(customOptions) {
+    stage('Deliver') { 
+            docker.image('cdrx/pyinstaller-linux:python2').inside {
                 sh '''
-                    echo "===== Deliver Stage Debug ====="
-                    pwd
-                    ls -la
+                    # Install required packages
+                    pip install pyinstaller
                     
                     # Create dist directory
                     mkdir -p dist
                     
-                    # Build executable
+                    # Show workspace contents
+                    echo "Current directory:"
+                    pwd
+                    ls -la
+                    
+                    # Run pyinstaller
                     pyinstaller --onefile sources/add2vals.py
+                    
+                    # Show dist contents
+                    echo "Dist directory contents:"
+                    ls -la dist/
                 '''
                 
                 if (currentBuild.resultIsBetterOrEqualTo('SUCCESS')) {
