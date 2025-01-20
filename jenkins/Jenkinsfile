@@ -62,8 +62,9 @@ node {
         }
     }
     
-    stage('Deliver') { 
-            docker.image('cdrx/pyinstaller-linux:python2').inside {
+    stage('Deliver') {
+        def customOptions = '--entrypoint=""' 
+            docker.image('cdrx/pyinstaller-linux:python2').inside(customOptions) {
                 sh '''
                     # Install required packages
                     pip install pyinstaller
