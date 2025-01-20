@@ -63,8 +63,8 @@ node {
     }
     
     stage('Deliver') {
-        docker.withRegistry('', '') {
-            docker.image('cdrx/pyinstaller-linux:python2').inside('--user root:root') {
+        def customOptions = '--entrypoint=""' 
+            docker.image('cdrx/pyinstaller-linux:python2').inside(customOptions) {
                 sh '''
                     echo "===== Deliver Stage Debug ====="
                     pwd
@@ -82,5 +82,4 @@ node {
                 }
             }
         }
-    }
 }
