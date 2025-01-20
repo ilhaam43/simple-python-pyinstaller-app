@@ -1,4 +1,11 @@
 node {
+    // Configure Poll SCM trigger to check every 2 minutes
+    properties([
+        pipelineTriggers([
+            pollSCM('H/2 * * * *')
+        ])
+    ])
+    
     stage('Build') {
         docker.image('python:2-alpine').inside {
             sh 'python -m py_compile sources/add2vals.py sources/calc.py'
