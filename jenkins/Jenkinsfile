@@ -63,21 +63,23 @@ node {
     }
     
     stage('Deliver') {
-        docker.image('cdrx/pyinstaller-linux:python2').inside {
-            sh '''
-                echo "===== Deliver Stage Debug ====="
-                pwd
-                ls -la
+        docker.withRegistry('', '') {
+            docker.image('cdrx/pyinstaller-linux:python2').inside('--user root:root') {
+                sh '''
+                    echo "===== Deliver Stage Debug ====="
+                    pwd
+                    ls -la
+                    
+                    # Create dist directory
+                    mkdir -p dist
+                    
+                    # Build executable
+                    pyinstaller --onefile sources/add2vals.py
+                '''
                 
-                # Create dist directory
-                mkdir -p dist
-                
-                # Build executable
-                pyinstaller --onefile sources/add2vals.py
-            '''
-            
-            if (currentBuild.resultIsBetterOrEqualTo('SUCCESS')) {
-                archiveArtifacts artifacts: 'dist/add2vals', allowEmptyArchive: false
+                if (currentBuild.resultIsBetterOrEqualTo('SUCCESS')) {
+                    archiveArtifacts artifacts: 'dist/add2vals', allowEmptyArchive: false
+                }
             }
         }
     }
