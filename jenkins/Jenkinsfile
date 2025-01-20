@@ -5,6 +5,20 @@ node {
             pollSCM('H/2 * * * *')
         ])
     ])
+
+    stage('Checkout') {
+        checkout scm
+        
+        // Debug workspace contents
+        sh '''
+            echo "===== Workspace Structure ====="
+            pwd
+            echo "\nFull directory structure:"
+            find . -type f
+            echo "\nCurrent directory contents:"
+            ls -la
+        '''
+    }
     
     stage('Build') {
         docker.image('python:2-alpine').inside {
