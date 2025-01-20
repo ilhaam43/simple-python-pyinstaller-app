@@ -8,7 +8,23 @@ node {
     
     stage('Build') {
         docker.image('python:2-alpine').inside {
-            sh 'python -m py_compile ../sources/add2vals.py ../sources/calc.py'
+            sh '''
+                echo "===== Build Stage Debug ====="
+                pwd
+                echo "\nCurrent directory contents:"
+                ls -la
+                echo "\nParent directory contents:"
+                ls -la ..
+                
+                # Ensure we're in the jenkins directory
+                cd jenkins
+                echo "\nAfter cd jenkins:"
+                pwd
+                ls -la
+                
+                # Compile Python files with correct path
+                python -m py_compile ../sources/add2vals.py ../sources/calc.py
+            '''
         }
     }
     
