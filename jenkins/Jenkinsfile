@@ -44,8 +44,12 @@ pipeline {
             }
             steps {
                 sh '''
-                    # Install pyinstaller
-                    pip install pyinstaller
+                    # Update and install required packages
+                    apt-get update
+                    apt-get install -y wget python-pip python-dev
+
+                    # Install pyinstaller using python -m pip
+                    python -m pip install pyinstaller
                     
                     # Create dist directory
                     mkdir -p dist
