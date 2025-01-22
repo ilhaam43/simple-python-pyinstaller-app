@@ -1,14 +1,12 @@
 FROM prom/prometheus:latest
 
-# Create directories for Prometheus
-RUN mkdir -p /etc/prometheus && \
-    mkdir -p /prometheus
+# Create directories for Prometheus and set permissions in one layer
+USER root
+RUN mkdir -p /etc/prometheus /prometheus && \
+    chown -R nobody:nobody /etc/prometheus /prometheus
 
-# Copy configuration file
-COPY prometheus.yml /etc/prometheus/prometheus.yml
-
-# Set permissions
-RUN chown -R nobody:nobody /etc/prometheus /prometheus
+# Copy configuration file with correct ownership
+COPY --chown=nobody:nobody prometheus.yml /etc/prometheus/prometheus.yml
 
 # Expose the port
 EXPOSE 9091
