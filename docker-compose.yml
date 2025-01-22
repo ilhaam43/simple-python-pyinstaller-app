@@ -56,6 +56,35 @@ services:
       - jenkins
     restart: always
 
+  prometheus:
+    build:
+      context: ./prometheus
+      dockerfile: Dockerfile
+    container_name: prometheus
+    volumes:
+      - prometheus-data:/prometheus
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - jenkins
+    ports:
+      - "9091:9091"
+    restart: always
+
+  grafana:
+    build:
+      context: ./grafana
+      dockerfile: Dockerfile
+    container_name: grafana
+    volumes:
+      - grafana-data:/var/lib/grafana
+    networks:
+      - jenkins
+    ports:
+      - "3031:3031"
+    depends_on:
+      - prometheus
+    restart: always
+
 networks:
   jenkins:
     name: jenkins
@@ -64,3 +93,5 @@ networks:
 volumes:
   jenkins-docker-certs:
   jenkins-data:
+  prometheus-data:
+  grafana-data:
