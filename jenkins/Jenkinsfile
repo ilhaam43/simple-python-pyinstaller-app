@@ -37,9 +37,6 @@ node {
     stage('Deploy') {
         docker.image('python:2-alpine').inside('-p 5005:5005') {  // Added port mapping
             try {
-                // Archive the compiled files
-                archiveArtifacts artifacts: 'sources/*.py*', fingerprint: true
-                
                 // Deploy step with port configuration
                 sh '''
                     echo "Deploying application on port 5005..."
